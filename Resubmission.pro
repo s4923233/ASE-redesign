@@ -4,21 +4,31 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT+= core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+isEqual(QT_MAJOR_VERSION, 5) {
+        cache()
+        DEFINES +=QT5BUILD
+}
 
 TARGET = Resubmission
 TEMPLATE = app
 
+OBJECTS_DIR=obj
+MOC_DIR=moc
+CONFIG -= app_bundle
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    fluidsimulator.cpp \
-    viewer.cpp
+SOURCES+=$$PWD/src/main.cpp\
+         $$PWD/src/mainwindow.cpp \
+         $$PWD/src/fluidsimulator.cpp \
+         $$PWD/src/viewer.cpp
 
-HEADERS  += mainwindow.h \
-    fluidsimulator.h \
-    viewer.h
+HEADERS+=$$PWD/include/mainwindow.h \
+         $$PWD/include/fluidsimulator.h \
+         $$PWD/include/viewer.h
+
+INCLUDEPATH+=./include
 
 FORMS    += mainwindow.ui
