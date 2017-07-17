@@ -1,24 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>972</width>
+    <height>656</height>
    </rect>
   </property>
-  <property name="windowTitle" >
-   <string>MainWindow</string>
+  <property name="windowTitle">
+   <string>ASE Resubmission</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="m_centralwidget_grd">
+   <layout class="QGridLayout" name="s_mainWindowGridLayout">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetMaximumSize</enum>
+    </property>
+    <item row="1" column="1">
+     <layout class="QGridLayout" name="m_menuRt_grd">
+      <item row="2" column="0">
+       <layout class="QGridLayout" name="m_menuTop_grd">
+        <item row="16" column="0">
+         <widget class="QCheckBox" name="m_displayActiveCells_CkBox">
+          <property name="text">
+           <string>Show Active Cells</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="m_PressSolver_lbl">
+          <property name="text">
+           <string>Pressure Solver</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QDoubleSpinBox" name="m_frameRate_DBox">
+          <property name="value">
+           <double>30.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QDoubleSpinBox" name="m_CFLCoeff_DBox">
+          <property name="value">
+           <double>2.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="m_frameRate_lbl">
+          <property name="text">
+           <string>FrameRate</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="0">
+         <widget class="QCheckBox" name="m_displayVelocityField_CkBox">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Show Velocity Field</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QComboBox" name="m_pressureSelect_CMBox">
+          <item>
+           <property name="text">
+            <string>Default</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Alpha</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="m_CFLCoeff_lbl">
+          <property name="text">
+           <string>CFL Coefficient</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="0">
+         <widget class="QCheckBox" name="m_displayGrid_CkBox">
+          <property name="text">
+           <string> Show Grid</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="0">
+         <widget class="QCheckBox" name="m_displayParticles_CkBox">
+          <property name="text">
+           <string>Show Particles</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="3" column="0">
+       <layout class="QGridLayout" name="m_menuBottom_grd">
+        <item row="1" column="0">
+         <widget class="QPushButton" name="m_playStop_Btn">
+          <property name="text">
+           <string>Play/Stop</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <spacer name="m_bottomGrid_spcBar">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="m_nextFrame_Btn">
+          <property name="text">
+           <string>NextFrame</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="m_playback_lbl">
+          <property name="text">
+           <string> Simulation Playback               </string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="m_simulationControl_lbl">
+        <property name="text">
+         <string>Simulation Controls          </string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <spacer name="m_menuRt_spcBar">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>972</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
  <resources/>
  <connections/>
 </ui>
