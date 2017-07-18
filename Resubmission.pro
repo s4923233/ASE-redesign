@@ -24,13 +24,19 @@ SOURCES+=$$PWD/src/main.cpp\
          $$PWD/src/mainwindow.cpp \
          $$PWD/src/fluidsimulator.cpp \
          $$PWD/src/view.cpp \
-         $$PWD/src/grid.cpp
+         $$PWD/src/grid.cpp \
+         $$PWD/src/cell.cpp \
+         $$PWD/src/particle.cpp \
+         $$PWD/src/observer.cpp
 
 HEADERS+=$$PWD/include/mainwindow.h \
          $$PWD/include/fluidsimulator.h \
          $$PWD/include/view.h \
          $$PWD/include/windowparams.h \
-         $$PWD/include/grid.h
+         $$PWD/include/grid.h \
+         $$PWD/include/cell.h \
+         $$PWD/include/particle.h \
+         $$PWD/include/observer.h
 
 INCLUDEPATH+=./include
 
