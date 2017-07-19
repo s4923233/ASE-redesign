@@ -178,6 +178,16 @@ float Cell::deltaVelocityV()
     return *m_deltaVelocityV;
 }
 
+float Cell::initialVelocityU()
+{
+    return *m_initialVelocityU;
+}
+
+float Cell::initialVelocityV()
+{
+    return *m_initialVelocityV;
+}
+
 //to change. Use map for velocities, instead
 Cell::vec2 Cell::velocity(const vec2 _point)
 {
@@ -279,6 +289,7 @@ void Cell::setPressure(const float _magnitude)
     *m_pressure = _magnitude;
 }
 
+
 void Cell::onNotify(const particle_ptr _entity, Event _event)
 {
 
@@ -332,6 +343,8 @@ void Cell::onNotify(const particle_ptr _entity, Event _event)
             bool removeObserver = true;
             for(auto &neighbour : m_neighbour)
             {
+                if(neighbour.second == 0)
+                    continue;
                 cell_ptr c = neighbour.second;
                 if(c->status() == Status::ACTIVE)
                 {

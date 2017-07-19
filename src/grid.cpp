@@ -203,9 +203,9 @@ Grid::vec2 Grid::velocity(const vec2 _point)
 {
     //Boundaries check
     if ((_point.m_x<0)||(_point.m_x>m_width))
-        throw(std::range_error("Error: Point outside grid boundaries"));
+        return vec2(0.0f,0.0f);//throw(std::range_error("Error: Point outside grid boundaries"));
     if ((_point.m_y<0)||(_point.m_y>m_height))
-        throw(std::range_error("Error: Point outside grid boundaries"));
+        return vec2(0.0f,0.0f);//throw(std::range_error("Error: Point outside grid boundaries"));
 
     Cell c = cell(_point); //cell method
     return c.velocity(_point);
@@ -218,6 +218,25 @@ Grid::vec2 Grid::velocity(const size_t _x,const size_t _y)
     return c.velocity(c.centre());
 }
 
+Grid::vec2 Grid::deltaVelocity(const vec2 _point)
+{
+    //Boundaries check
+    if ((_point.m_x<0)||(_point.m_x>m_width))
+        return vec2(0.0f,0.0f);//throw(std::range_error("Error: Point outside grid boundaries"));
+    if ((_point.m_y<0)||(_point.m_y>m_height))
+        return vec2(0.0f,0.0f);//throw(std::range_error("Error: Point outside grid boundaries"));
+
+    Cell c = cell(_point); //cell method
+    return c.deltaVelocity(_point);
+}
+
+Grid::vec2 Grid::deltaVelocity(const size_t _x,const size_t _y)
+{
+    Cell c = m_gridCell[toIndex(_x,_y)];
+    return c.deltaVelocity(c.centre());
+}
+
+
 float Grid::velocityDivergence(const size_t _x,const size_t _y)
 {
     Cell c = m_gridCell[toIndex(_x,_y)];
@@ -226,9 +245,9 @@ float Grid::velocityDivergence(const size_t _x,const size_t _y)
 
 void Grid::maxVelocityUpdate()
 {
-    std::vector<float> velocityUSquared;
-    std::vector<float> velocityVSquared;
-    std::vector<float> velocityUVSum;
+    std::vector<float> velocityUSquared(m_size,0.0f);
+    std::vector<float> velocityVSquared(m_size,0.0f);
+    std::vector<float> velocityUVSum(m_size,0.0f);
 
     std::transform(m_gridVelocityU.begin(),m_gridVelocityU.end(),
                    m_gridVelocityU.begin(),velocityUSquared.begin(),std::multiplies<float>());
@@ -255,6 +274,12 @@ void Grid::deltaVelocityUpdate()
     std::transform(m_gridVelocityV.begin(),m_gridVelocityV.end(),
                    m_gridInitialVelocityV.begin(),m_gridDeltaVelocityV.begin(),std::minus<float>());
 
+}
+
+void Grid::resetInitialVelocity()
+{
+    std::fill(m_gridInitialVelocityU.begin(),m_gridInitialVelocityU.end(),0.0f);
+    std::fill(m_gridInitialVelocityV.begin(),m_gridInitialVelocityV.end(),0.0f);
 }
 
 

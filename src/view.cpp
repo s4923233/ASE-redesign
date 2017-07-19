@@ -89,6 +89,11 @@ void View::paintGL()
     {
         activeCells(m_fluidSimulator->activeCells(m_time));
     }
+
+    if(m_displayBoundaries)
+    {
+        boundaries(m_fluidSimulator->boundaries());
+    }
 }
 
 
@@ -99,6 +104,8 @@ void View::timerEvent(QTimerEvent *)
     static float time;
     time+=0.1f;
     m_time = time;
+
+    m_fluidSimulator->advanceFrame();
     update();
 }
 
@@ -116,7 +123,26 @@ void View::activeCells(const std::vector<vec3>& _data)
         m_transform.setPosition(*cellCntr_it);
         updateMVP();
 
-        prim->draw("activeCell");
+        prim->draw("cell");
+        cellCntr_it++;
+    }
+}
+
+void View::boundaries(const std::vector<vec3>& _data)
+{
+    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+    m_transform.setRotation(vec3(90.0f,0.0f,0.0f));
+    updateMVP();
+
+    ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
+
+    std::vector<vec3>::const_iterator cellCntr_it = _data.begin();
+    while(cellCntr_it != _data.end())
+    {
+        m_transform.setPosition(*cellCntr_it);
+        updateMVP();
+
+        prim->draw("cell");
         cellCntr_it++;
     }
 }
@@ -168,7 +194,7 @@ void View::initGridShape(float _w, float _h, size_t _nColumns, size_t _nRows)
 void View::initCellShape()
 {
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
-    prim->createTrianglePlane("activeCell",m_gridDeltaU,m_gridDeltaV,1,1,vec3(0.0f,0.0f,1.0f));
+    prim->createTrianglePlane("cell",m_gridDeltaU,m_gridDeltaV,1,1,vec3(0.0f,0.0f,1.0f));
 }
 
 void View::initParticleShape()

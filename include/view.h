@@ -23,6 +23,7 @@ public:
     void velocityFieldUpdate(const std::vector<vec3>& _data);
 
     void activeCells(const std::vector<vec3>& _data);
+    void boundaries(const std::vector<vec3>& _data);
     void particles(const std::vector<vec3>& _data);
     void grid();
 
@@ -30,6 +31,7 @@ public:
     void setDisplayVelocityField(bool _mode)            {m_displayVelocityField=_mode;}
     void setDisplayParticles(bool _mode)                {m_displayParticles=_mode;}
     void setDisplayActiveCells(bool _mode)              {m_displayActiveCells=_mode;}
+    void setBoundaries(bool _mode)                      {m_displayBoundaries=_mode;}
 
 protected:
     void resizeGL(int _w, int _h);
@@ -68,6 +70,7 @@ private:
     bool m_displayVelocityField;
     bool m_displayParticles;
     bool m_displayActiveCells;
+    bool m_displayBoundaries;
 
 
     float m_time;

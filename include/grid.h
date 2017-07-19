@@ -38,6 +38,9 @@ public:
     vec2 velocity(const vec2 _point);
     vec2 velocity(const size_t _x,const size_t _y);
 
+    vec2 deltaVelocity(const vec2 _point);
+    vec2 deltaVelocity(const size_t _x,const size_t _y);
+
     float velocityDivergence(const vec2 _point);
     float velocityDivergence(const size_t _x,const size_t _y);
 
@@ -68,7 +71,8 @@ public:
     const_iterator cbegin() const {return m_gridCell.cbegin();}
     const_iterator cend() const {return m_gridCell.cend();}
 
-protected:
+    //reset
+    void resetInitialVelocity();
 
     void updateObserverList();
 

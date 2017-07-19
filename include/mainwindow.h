@@ -17,6 +17,7 @@ public slots:
     void toggleVelocityField(bool _mode);
     void toggleParticles(bool _mode);
     void toggleActiveCells(bool _mode);
+    void toggleBoundaries(bool _mode);
 
 public:
     explicit MainWindow(QWidget *parent = 0);

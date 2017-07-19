@@ -5,6 +5,16 @@ Particle::Particle()
 
 }
 
+Particle::Particle(vec2 _pos)
+{
+    this->m_position = _pos;
+}
+
+Particle::Particle(vec2 _pos, vec2 _velocity)
+{
+    this->m_position = _pos;
+    this->m_velocity = _velocity;
+}
 
 void Particle::addObserver(observer_ptr _observer)
 {
@@ -49,6 +59,8 @@ void Particle::notify(const Event _event)
 
     for(auto observer: m_observer)
     {
+        if(observer == nullptr)
+            continue;
         observer->onNotify(this,_event);
     }
 }

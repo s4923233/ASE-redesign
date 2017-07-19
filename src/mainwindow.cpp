@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::Main
     connect(m_ui->m_displayVelocityField_CkBox,SIGNAL(toggled(bool)),this,SLOT(toggleVelocityField(bool)));
     connect(m_ui->m_displayParticles_CkBox,SIGNAL(toggled(bool)),this,SLOT(toggleParticles(bool)));
     connect(m_ui->m_displayActiveCells_CkBox,SIGNAL(toggled(bool)),this,SLOT(toggleActiveCells(bool)));
+    connect(m_ui->m_displayBoundaries_CkBox,SIGNAL(toggled(bool)),this,SLOT(toggleBoundaries(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -54,5 +55,11 @@ void MainWindow::toggleParticles(bool _mode)
 void MainWindow::toggleActiveCells(bool _mode)
 {
     m_view->setDisplayActiveCells(_mode);
+    update();
+}
+
+void MainWindow::toggleBoundaries(bool _mode)
+{
+    m_view->setBoundaries(_mode);
     update();
 }

@@ -13,16 +13,18 @@ class Particle
     typedef ngl::Vec2 vec2;
     typedef Observer* observer_ptr;
 public:
+    size_t m_cellIndex;
     vec2 m_position;
     vec2 m_velocity;
 
     Particle();
+    Particle(vec2 _pos);
+    Particle(vec2 _pos, vec2 _velocity);
 
     void addObserver(observer_ptr _observer);
     void removeObserver(observer_ptr _observer);
     bool isObserver(observer_ptr _observer);
 
-protected:
     void notify(const Event _event);
 private:
     std::vector<observer_ptr> m_observer;

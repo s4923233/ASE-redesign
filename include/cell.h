@@ -42,12 +42,16 @@ public:
 
     vec2 halfEdge(char _key)    {return m_halfEdge[_key];}
 
+    size_t particleCount() const {return m_particleCount;}
+
     float density();
 
     float velocityU();
     float velocityV();
     float deltaVelocityU();
     float deltaVelocityV();
+    float initialVelocityU();
+    float initialVelocityV();
 
     vec2 velocity(const vec2 _point);
     vec2 deltaVelocity(const vec2 _point);
@@ -67,7 +71,8 @@ public:
 
     void setPressure(const float _magnitude);
 
-
+    void resetParticleCount() {m_particleCount = 0;}
+    void incrementParticleCount() {m_particleCount++;}
 private:
     void onNotify(const particle_ptr _entity, Event _event);
 
@@ -88,6 +93,7 @@ private:
     std::map<char,vec2> m_halfEdge;
 
     size_t m_particlePoolSize; //<- ????
+    size_t m_particleCount;
 
     magnitude_ptr m_initialVelocityU;
     magnitude_ptr m_velocityU;
