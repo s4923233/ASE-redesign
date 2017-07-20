@@ -242,8 +242,6 @@ float FluidSimulator::h(float _r)
 
 void FluidSimulator::advectParticles(float _timeStep)
 {
-
-    size_t tempIndex;
     //Forward Euler Advection
     for(auto &p : m_particlePool)
     {
@@ -280,6 +278,55 @@ void FluidSimulator::markCells()
     }
 }
 
+FluidSimulator::vec2 FluidSimulator::particleTrace(vec2 _pos, float _timeStep)
+{
+    vec2 velocity = m_grid.velocity(_pos);
+
+    _pos -= _timeStep*velocity;
+
+    //clamp position to boundaries
+    _pos.m_x  = _pos.m_x < 0 ? 0.0f : _pos.m_x;
+    _pos.m_x  = _pos.m_x > m_grid.width() ?  m_grid.width() : _pos.m_x;
+
+    _pos.m_y = _pos.m_y < 0 ? 0.0f : _pos.m_y;
+    _pos.m_y = _pos.m_y > m_grid.height() ? m_grid.height() : _pos.m_y;
+
+    return _pos;
+}
+
+void FluidSimulator::advectVelocity(float _timeStep)
+{
+    vec2 pos;
+
+    std::vector<float> tempVelocityU;
+    std::vector<float> tempVelocityV;
+
+    Grid::iterator cell_it = m_grid.begin();
+    while(cell_it != m_grid.end())
+    {
+        //U velocity
+        pos = particleTrace(cell_it->halfEdge('W'),_timeStep);
+        tempVelocityU.push_back(m_grid.velocity(pos).m_x);
+
+        //V velocity
+        pos = particleTrace(cell_it->halfEdge('S'),_timeStep);
+        tempVelocityV.push_back(m_grid.velocity(pos).m_y);
+        cell_it++;
+    }
+
+
+    for(size_t i = 0; i<m_grid.size(); ++i)
+    {
+        m_grid.cell(i).setVelocityU(tempVelocityU[i]);
+        m_grid.cell(i).setVelocityV(tempVelocityV[i]);
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -294,6 +341,7 @@ std::vector<FluidSimulator::vec3> FluidSimulator::velocityField(float _time)//do
     vec3 vertex;
     vertex.m_z = 0.0f;
 
+    /*
     std::vector<vec3>::iterator centres_it = m_cellCentres.begin();
     while(centres_it != m_cellCentres.end())
     {
@@ -301,6 +349,19 @@ std::vector<FluidSimulator::vec3> FluidSimulator::velocityField(float _time)//do
         vertex.m_y = centres_it->m_y + sinf(centres_it->m_y + _time) ;//cos di qualcosa
         data.push_back(vertex);
         centres_it++;
+    }*/
+
+/*********************************************************************************************************************************/
+////TO DEBUG VELOCITY FIELD VISUALIZATION
+/*********************************************************************************************************************************/
+
+    Grid::iterator cell_it = m_grid.begin();
+    while(cell_it != m_grid.end())
+    {
+        vertex.m_x = cell_it->centre().m_x + cell_it->velocityU();
+        vertex.m_y = cell_it->centre().m_y + cell_it->velocityV();
+        data.push_back(vertex);
+        cell_it++;
     }
 
     return data;

@@ -36,6 +36,8 @@ public:
     void transferToGrid();
     void advectParticles(float _timeStep);
     void markCells();
+    vec2 particleTrace(vec2 _pos, float _timeStep);
+    void advectVelocity(float _timeStep);
 
 
 protected:
