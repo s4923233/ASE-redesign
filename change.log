@@ -1,0 +1,48 @@
+Changelog
+Main notable changes to the initial ASE project are documented in this file.
+
+Added
+
+MVC design pattern to organise MainWindow, View, FluidSimulator
+
+Grid design
+
+Cell design
+
+FluidSimulator class
+
+pressure solver algorithm
+
+flip particle avection
+
+negative divergence calculation
+
+pressure field update
+
+pressureGradientUpdate
+
+Particle to grid quantity transfer
+
+Grid to particle quantity transfer
+
+solid velocity at the boundaries
+
+density calculation
+
+active cell tracking
+
+weighted velocity divergence
+
+weighted velocity
+
+random particle emission per cell
+
+random particle global emission
+
+simulation maximum velocity
+
+GUI
+
+active cells visualisation
+
+boundaries visualisation
