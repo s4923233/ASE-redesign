@@ -1,14 +1,27 @@
 #include "fluidsimulator.h"
 #include <math.h>
+#include <cmath>
 #include <random>
+#include <iostream>
 
 FluidSimulator::FluidSimulator()
 {
-    m_grid= Grid(5,5,15,15);
+    m_grid = Grid(5,5,15,15);
     initCellCentres();
     initBoundaries();
     emitParticles(50,1,0.25f);
     //emitParticlesPerCell(8,0,1.0f);
+
+    size_t nParticles = m_particlePool.size();
+    Grid::iterator cell_it = m_grid.begin();
+    while(cell_it!=m_grid.end())
+    {
+        cell_it->setParticlePoolSize(nParticles);
+        cell_it++;
+    }
+
+    markCells();
+
 }
 
 FluidSimulator::~FluidSimulator(){}
@@ -157,7 +170,7 @@ void FluidSimulator::advanceFrame()
             break;
         }
 
-        float simulationTimeStep;
+        float simulationTimeStep = 0.0f;
         if(m_grid.maxVelocity()==0)
         {
             simulationTimeStep = frameTime;
@@ -182,9 +195,8 @@ void FluidSimulator::advanceFrame()
 void FluidSimulator::routineFLIP(float _timeStep)
 {
     transferToGrid();
-
     m_grid.deltaVelocityUpdate();
-
+    pressureSolve(_timeStep);
     advectParticles(_timeStep);
 
     m_grid.maxVelocityUpdate();
@@ -233,9 +245,9 @@ float FluidSimulator::kernel(vec2 _xp)
 
 float FluidSimulator::h(float _r)
 {
-    if(_r>=0||_r<=1)
+    if(_r>=0 && _r<=1)
         return 1-_r;
-    if(_r>=-1 || _r<0)
+    if(_r>=-1 && _r<0)
         return 1+_r;
     return 0;
 }
@@ -272,10 +284,26 @@ void FluidSimulator::markCells()
     for(auto &p :m_particlePool)
     {
         c = &(m_grid.cell(p.m_position));
-        c->setLabel(Label::FLUID);
-        c->setStatus(Status::ACTIVE);
-        c->incrementParticleCount();
+        if(c->label()==Label::EMPTY)
+        {
+            c->setLabel(Label::FLUID);
+            c->setStatus(Status::ACTIVE);
+            c->incrementParticleCount();
+        }
+        else
+        {
+            boundaryCollide(&p);
+        }
     }
+}
+
+void FluidSimulator::boundaryCollide(particle_ptr _p)
+{
+    vec2 pos = _p->m_position;
+    if(pos.m_x<=1 || pos.m_x>=m_grid.width()-1)
+        _p->m_velocity.m_x *= -1;
+    if(pos.m_y<=1 || pos.m_y>=m_grid.height()-1)
+        _p->m_velocity.m_y *= -1;
 }
 
 FluidSimulator::vec2 FluidSimulator::particleTrace(vec2 _pos, float _timeStep)
@@ -323,9 +351,271 @@ void FluidSimulator::advectVelocity(float _timeStep)
 }
 
 
+VectorXd FluidSimulator::negativeDivergence(float _timeStep)
+{
+    size_t height = nColumns()-1; //nColumns()-1?
+    size_t width = nRows()-1; //nRows()-1?
+    size_t dim = m_grid.size();
+
+    VectorXd b(dim);
+
+    float dx = m_grid.deltaU();
+    float scale = 1.0f/dx;
+
+    vec2 coordinate;
+    for(size_t i = 0; i<m_grid.size();++i)
+    {
+        b(i) = 0.0f;
+        if(m_grid.cell(i).label() == Label::FLUID)
+        {
+            coordinate = m_grid.toCartesian(i);
+            b(i) = -scale*m_grid.velocityDivergence(coordinate.m_x,coordinate.m_y);
+        }
+    }
+
+    size_t index;
+    for (size_t y = 0; y < height; ++y)
+    {
+        for (size_t x = 0; x < width; ++x)
+        {
+            index = m_grid.toIndex(x,y);
+            if(m_grid.cell(x,y).label() == Label::FLUID)
+            {
+                //x-1>=0
+                if(x>=1 && m_grid.cell(x-1,y).label() == Label::SOLID)
+                {
+
+                    b(index) -= scale * (m_grid.cell(x,y).velocityU() - usolid(x,y));
+                }
+
+                if((x+1)<m_grid.nColumns() && m_grid.cell(x+1,y).label() == Label::SOLID)
+                {
+                    b(index) += scale * (m_grid.cell(x+1,y).velocityU() - usolid(x+1,y));
+                }
+
+                //y-1>=0
+                if(y>=1 && m_grid.cell(x,y-1).label() == Label::SOLID)
+                {
+                    b(index) -= scale * (m_grid.cell(x,y).velocityV()-vsolid(x,y));
+                }
+
+                if((y+1)<m_grid.nColumns() && m_grid.cell(x,y+1).label() == Label::SOLID)
+                {
+                    b(index) += scale * (m_grid.cell(x,y+1).velocityV()-vsolid(x,y+1));
+                }
+            }
+        }
+    }
+
+    return b;
+}
 
 
+SparseMatrix<double,RowMajor> FluidSimulator::setUpMatrixA(float _timeStep)
+{
 
+    size_t height = nColumns()-1;
+    size_t width = nRows()-1;
+    size_t dim = m_grid.size();
+
+    //Step2. Set the entries of A
+    SparseMatrix<double,RowMajor> A(dim,dim);
+
+    float dx = m_grid.deltaU();
+    float scale;
+
+    for(size_t y=0;y<height;++y)
+    {
+        for(size_t x=0;x<width;++x)
+        {
+            scale = _timeStep/(m_grid.density(x,y)*dx*dx);
+            size_t i = y*width+x;//row index of A
+            size_t j = 0; //pressure equation coefficient index. Column index of A
+
+            if(m_grid.cell(x,y).label() == Label::FLUID)
+            {
+                //U
+                if(x>=1 && m_grid.cell(x-1,y).label() == Label::FLUID)
+                {
+                    //Adiag +=scale
+                    j=y*width+x;
+                    A.coeffRef(i,j) += scale;
+                }
+                if(x+1<width && m_grid.cell(x+1,y).label() == Label::FLUID)
+                {
+                    //Adiag +=scale
+                    j=y*width+x;
+                    A.coeffRef(i,j) += scale;
+                    //Ax = -scale
+                    j=(y+1)*width+x;
+                    A.coeffRef(i,j) = -scale;
+                }
+                else if(x+1<width && m_grid.cell(x+1,y).label() == Label::EMPTY)
+                {
+                    //Adiag +=scale
+                    j=y*width+x;
+                    A.coeffRef(i,j) += scale;
+                }
+                //V
+                if(y>=1 && m_grid.cell(x,y-1).label() == Label::FLUID)
+                {
+                    //Adiag +=scale
+                    j=y*width+x;
+                    A.coeffRef(i,j) += scale;
+                }
+                if(y+1<height && m_grid.cell(x,y+1).label() == Label::FLUID)
+                {
+                    //Adiag +=scale
+                    j=y*width+x;
+                    A.coeffRef(i,j) += scale;
+                    //Ay = -scale
+                    j=y*width+x+1;
+                    A.coeffRef(i,j) = -scale;
+                }
+                else if(y+1<height && m_grid.cell(x,y+1).label() == Label::EMPTY)
+                {
+                    //Adiag +=scale
+                    j=y*width+x;
+                    A.coeffRef(i,j) += scale;
+                }
+            }
+        }
+    }
+    return A;
+
+}
+
+void FluidSimulator::updatePressureField(VectorXd _p)
+{
+    for(size_t i= 0;i<m_grid.size(); i++)
+    {
+        m_grid.pressure(i,_p(i));
+    }
+}
+
+
+void FluidSimulator::pressureGradientUpdate(float _timeStep)
+{
+    size_t height = nColumns()-1;
+    size_t width = nRows()-1;
+
+    float scale = 0.0f;
+    float dx = m_grid.deltaU();
+    float pressure_dx = 0.0f;
+    float pressure_dy = 0.0f;
+
+
+    for(size_t y=0;y<height;++y)
+    {
+        for(size_t x=0;x<width;++x)
+        {
+            scale = _timeStep/(m_grid.density(x,y)*dx);
+            //UpdateU
+            if((x>=1 && m_grid.cell(x-1,y).label() == Label::FLUID) ||  m_grid.cell(x,y).label() == Label::FLUID )
+            {
+                if((x>=1 && m_grid.cell(x-1,y).label() == Label::SOLID) ||  m_grid.cell(x,y).label() == Label::SOLID )
+                {
+                    m_grid.cell(x,y).setVelocityU(usolid(x,y));
+                }
+                else
+                {
+                    pressure_dx = (m_grid.cell(x,y).pressure()-m_grid.cell(x-1,y).pressure());
+                    if(m_grid.cell(x,y).label()==Label::EMPTY)
+                        m_grid.cell(x,y).setVelocityU(m_grid.cell(x,y).velocityU());
+                    else
+                    m_grid.cell(x,y).setVelocityU(m_grid.cell(x,y).velocityU()-scale*pressure_dx);
+                }
+            }
+            else
+            {
+                m_grid.cell(x,y).setVelocityU(0.0f);
+            }
+            //Update V
+            if((y>=1 && m_grid.cell(x,y-1).label() == Label::FLUID) ||  m_grid.cell(x,y).label() == Label::FLUID )
+            {
+                if((y>=1 && m_grid.cell(x,y-1).label() == Label::SOLID) ||  m_grid.cell(x,y).label() == Label::SOLID )
+                {
+                      m_grid.cell(x,y).setVelocityV(vsolid(x,y));
+                }
+                else
+                {
+                    pressure_dy = (m_grid.cell(x,y).pressure()-m_grid.cell(x,y-1).pressure());
+                    if(m_grid.cell(x,y).label()==Label::EMPTY)
+                        m_grid.cell(x,y).setVelocityV(m_grid.cell(x,y).velocityV());
+                    else
+                        m_grid.cell(x,y).setVelocityV(m_grid.cell(x,y).velocityV()-scale*pressure_dy);
+                }
+            }
+            else
+            {
+                m_grid.cell(x,y).setVelocityV(0.0f);
+            }
+        }
+    }
+
+}
+
+
+float FluidSimulator::usolid(size_t _x, size_t _y)
+{
+
+    if(m_grid.cell(_x,_y).label() == Label::FLUID)
+    {
+        //Solid||Fluid
+        return  m_grid.cell(_x,_y).velocityU();
+    }
+
+    //Fluid||Solid
+    return -m_grid.cell(_x,_y).velocityU();
+
+
+}
+
+float FluidSimulator::vsolid(size_t _x, size_t _y)
+{
+
+    if(m_grid.cell(_x,_y).label() == Label::FLUID)
+    {
+        //Solid||Fluid
+        return  m_grid.cell(_x,_y).velocityV();
+    }
+
+    //Fluid||Solid
+    return -m_grid.cell(_x,_y).velocityV();
+}
+
+
+void FluidSimulator::pressureSolve(float _timeStep)
+{
+    size_t dim = m_grid.size();
+
+    //Step1. Negative Divergence
+    VectorXd b = negativeDivergence(_timeStep);
+
+    //Step2. Set up the entries of A
+    SparseMatrix<double,RowMajor> A = setUpMatrixA(_timeStep);
+
+    //Step3. Conjugate gradient
+    VectorXd p(dim);
+    ConjugateGradient<SparseMatrix<double,RowMajor>> cg;
+    cg.compute(A);
+
+    //Step4. solve Ap=b
+    p = cg.solve(b);
+    if(cg.info() == Success)
+        std::cout<< "SUCCESS: Convergence" << std::endl;
+    else
+    {
+        std::cout << "FAILED: No Convergence" << std::endl;
+    }
+
+    //Step 5. Update Pressure Field
+    updatePressureField(p);
+
+    //Step6. Pressure Gradient Update
+    pressureGradientUpdate(_timeStep);
+
+}
 
 
 
@@ -341,7 +631,7 @@ std::vector<FluidSimulator::vec3> FluidSimulator::velocityField(float _time)//do
     vec3 vertex;
     vertex.m_z = 0.0f;
 
-    /*
+/*
     std::vector<vec3>::iterator centres_it = m_cellCentres.begin();
     while(centres_it != m_cellCentres.end())
     {
@@ -358,8 +648,11 @@ std::vector<FluidSimulator::vec3> FluidSimulator::velocityField(float _time)//do
     Grid::iterator cell_it = m_grid.begin();
     while(cell_it != m_grid.end())
     {
-        vertex.m_x = cell_it->centre().m_x + cell_it->velocityU();
-        vertex.m_y = cell_it->centre().m_y + cell_it->velocityV();
+
+        vertex.m_x = cell_it->centre().m_x+ cosf(cell_it->velocityV()*3.14);
+        vertex.m_y = cell_it->centre().m_y+ sinf(cell_it->velocityU()*3.14);
+        //vertex.m_x = cell_it->centre().m_x + cell_it->velocity(cell_it->centre()).m_x;
+        //vertex.m_y = cell_it->centre().m_y +cell_it->velocity(cell_it->centre()).m_y;
         data.push_back(vertex);
         cell_it++;
     }

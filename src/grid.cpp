@@ -45,6 +45,7 @@ Grid::Grid(float _w,float _h,size_t _nColumns,size_t _nRows)
         }
     }
 
+    m_maxVelocity = 0.0f;
     initGrids();
 }
 
@@ -129,16 +130,17 @@ Grid::~Grid(){}
 void Grid::initGrids()
 {
     //resize Grids
-    m_gridInitialVelocityU.resize(m_size);
-    m_gridVelocityU.resize(m_size);
-    m_gridDeltaVelocityU.resize(m_size);
+    m_gridInitialVelocityU.resize(m_size,0.0f);
+    m_gridVelocityU.resize(m_size,0.0f);
+    m_gridDeltaVelocityU.resize(m_size,0.0f);
 
-    m_gridInitialVelocityV.resize(m_size);
-    m_gridVelocityV.resize(m_size);
-    m_gridDeltaVelocityV.resize(m_size);
+    m_gridInitialVelocityV.resize(m_size,0.0f);
+    m_gridVelocityV.resize(m_size,0.0f);
+    m_gridDeltaVelocityV.resize(m_size,0.0f);
+
+    m_gridPressure.resize(m_size,0.0f);
 
     m_gridCell.resize(m_size);
-    m_gridPressure.resize(m_size);
 
     //initialize Cell grid and wire U,V,Pressure pointers to appropriate grids
     size_t cell_index = 0;
@@ -181,6 +183,12 @@ void Grid::initGrids()
         }
     }
 
+    Grid::iterator cell_it = m_gridCell.begin();
+    while(cell_it!=m_gridCell.end())
+    {
+        cell_it->initNeighbourIndexList();
+        cell_it++;
+    }
 
 }
 
@@ -289,10 +297,9 @@ float Grid::density(const size_t _x,const size_t _y)
     return c.density();
 }
 
-float Grid::pressure(const size_t _x,const size_t _y)
+void Grid::pressure(const size_t _index, const float _pressure)
 {
-    Cell c = m_gridCell[toIndex(_x,_y)];
-    return c.pressure();
+    m_gridCell[_index].setPressure(_pressure);
 }
 
 Cell& Grid::cell(const size_t _index)

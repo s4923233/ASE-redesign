@@ -1,5 +1,6 @@
 #include "cell.h"
 #include <limits.h>
+#include <cmath>
 
 Cell::Cell()
 {
@@ -24,6 +25,7 @@ Cell::Cell()
     m_halfEdge['W'] = vec2(m_minU,m_centre.m_y);
 
     m_particlePoolSize = 0;
+    m_particleCount = 0;
 
     m_initialVelocityU = nullptr;
     m_velocityU = nullptr;
@@ -38,6 +40,7 @@ Cell::Cell()
     m_neighbour['E'] = nullptr;
     m_neighbour['W'] = nullptr;
 
+    m_neighbourIndexList.clear();
     m_particles.clear();
 }
 
@@ -65,6 +68,7 @@ Cell::Cell(const size_t _index, const vec2 _minUV, const vec2 _maxUV, const std:
     m_halfEdge['W'] = vec2(m_minU,m_centre.m_y);
 
     m_particlePoolSize = 0;
+    m_particleCount = 0;
 
     m_initialVelocityU = _magnitude[0];
     m_velocityU = _magnitude[1];
@@ -79,6 +83,7 @@ Cell::Cell(const size_t _index, const vec2 _minUV, const vec2 _maxUV, const std:
     m_neighbour['E'] = _neighbour[2];
     m_neighbour['W'] = _neighbour[3];
 
+    m_neighbourIndexList.clear();
     m_particles.clear();
 }
 
@@ -101,6 +106,7 @@ Cell::Cell(const Cell& _other)
     this->m_halfEdge = _other.m_halfEdge;
 
     this->m_particlePoolSize = _other.m_particlePoolSize;
+    this->m_particleCount = _other.m_particleCount;
 
     this->m_initialVelocityU = _other.m_initialVelocityU;
     this->m_velocityU =  _other.m_velocityU;
@@ -111,6 +117,7 @@ Cell::Cell(const Cell& _other)
     this->m_pressure = _other.m_pressure;
 
     this->m_neighbour = _other.m_neighbour;
+    this->m_neighbourIndexList = _other.m_neighbourIndexList;
     this->m_particles = _other.m_particles;
 }
 
@@ -135,6 +142,7 @@ Cell& Cell::operator=(const Cell& _other)
     this->m_halfEdge = _other.m_halfEdge;
 
     this->m_particlePoolSize = _other.m_particlePoolSize;
+    this->m_particleCount = _other.m_particleCount;
 
     this->m_initialVelocityU = _other.m_initialVelocityU;
     this->m_velocityU =  _other.m_velocityU;
@@ -145,6 +153,7 @@ Cell& Cell::operator=(const Cell& _other)
     this->m_pressure = _other.m_pressure;
 
     this->m_neighbour = _other.m_neighbour;
+    this->m_neighbourIndexList = _other.m_neighbourIndexList;
     this->m_particles = _other.m_particles;
 
     return *this;
@@ -154,7 +163,7 @@ Cell::~Cell(){}
 
 float Cell::density()
 {
-    return static_cast<float>(m_particles.size())
+    return static_cast<float>(m_particleCount)
             /static_cast<float>(m_particlePoolSize);
 }
 
@@ -289,6 +298,14 @@ void Cell::setPressure(const float _magnitude)
     *m_pressure = _magnitude;
 }
 
+void Cell::initNeighbourIndexList()
+{
+    m_neighbourIndexList.resize(4);
+    m_neighbourIndexList[0] = m_neighbour['N'] == nullptr ? -1: m_neighbour['N']->index();
+    m_neighbourIndexList[1] = m_neighbour['S'] == nullptr ? -1: m_neighbour['S']->index();
+    m_neighbourIndexList[2] = m_neighbour['E'] == nullptr ? -1: m_neighbour['E']->index();
+    m_neighbourIndexList[3] = m_neighbour['W'] == nullptr ? -1: m_neighbour['W']->index();
+}
 
 void Cell::onNotify(const particle_ptr _entity, Event _event)
 {
