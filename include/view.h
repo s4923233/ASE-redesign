@@ -10,6 +10,20 @@
 #include "windowparams.h"
 #include "FluidSimulator.h"
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @class View
+/// @brief The View class is the View component in the MVC design pattern.
+/// The class receives the settings from the Control, retreives information from the Model (FluidSimulator class)
+/// and displays the data.
+/// It is also responsible to initialise the openGL context and assemble and store the geometric data.
+///
+/// Originally based on class NGLScene from https://github.com/NCCA/SimpleNGL.git
+///  @author Federico Leone
+///  @version 3.0
+///  @date
+/// @todo Improve the velocity field visualization to display more intuitive data.
+//----------------------------------------------------------------------------------------------------------------------
+
 class View : public QOpenGLWidget
 {
     typedef ngl::Vec3 vec3;

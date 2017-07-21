@@ -4,6 +4,10 @@
 #include <random>
 #include <iostream>
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @file cell.cpp
+/// @brief implementation files for Cell class
+//----------------------------------------------------------------------------------------------------------------------
 FluidSimulator::FluidSimulator()
 {
     m_grid = Grid(5,5,15,15);
@@ -24,6 +28,7 @@ FluidSimulator::FluidSimulator()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 FluidSimulator::~FluidSimulator(){}
 
 void FluidSimulator::initBoundaries()
@@ -62,7 +67,7 @@ void FluidSimulator::initBoundaries()
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 //Emit _count particles for each cell
 void FluidSimulator::emitParticlesPerCell(size_t _count,size_t _seed, float _velocity)
 {
@@ -103,6 +108,7 @@ void FluidSimulator::emitParticlesPerCell(size_t _count,size_t _seed, float _vel
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 //Emit particles at random position all over the grid
 //If a particle happens to be in a cell marked as solid, it won't be created
 void FluidSimulator::emitParticles(size_t _count,size_t _seed,float _velocity)
@@ -143,6 +149,7 @@ void FluidSimulator::emitParticles(size_t _count,size_t _seed,float _velocity)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::advanceFrame()
 {
     float frameTime = 1.0f/30.0f; // 30Hz
@@ -177,6 +184,7 @@ void FluidSimulator::advanceFrame()
     m_frameReady = false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::routineFLIP(float _timeStep)
 {
 
@@ -192,6 +200,7 @@ void FluidSimulator::routineFLIP(float _timeStep)
     markCells();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::transferToGrid()
 {
     //Weight = totNumberOfParticles/ nonBoundaryCells
@@ -226,12 +235,14 @@ void FluidSimulator::transferToGrid()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float FluidSimulator::kernel(vec2 _xp)
 {
     return h(_xp.m_x/m_grid.deltaU())
             *h(_xp.m_y/m_grid.deltaV());
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float FluidSimulator::h(float _r)
 {
     if(_r>=0 && _r<=1)
@@ -241,6 +252,7 @@ float FluidSimulator::h(float _r)
     return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::advectParticles(float _timeStep)
 {
     //Forward Euler Advection
@@ -254,7 +266,7 @@ void FluidSimulator::advectParticles(float _timeStep)
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::markCells()
 {
     std::vector<Cell>::iterator cell_it = m_grid.begin();
@@ -286,6 +298,7 @@ void FluidSimulator::markCells()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::boundaryCollide(particle_ptr _p)
 {
     vec2 pos = _p->m_position;
@@ -295,6 +308,7 @@ void FluidSimulator::boundaryCollide(particle_ptr _p)
         _p->m_velocity.m_y *= -1;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 FluidSimulator::vec2 FluidSimulator::particleTrace(vec2 _pos, float _timeStep)
 {
     vec2 velocity = m_grid.velocity(_pos);
@@ -311,6 +325,7 @@ FluidSimulator::vec2 FluidSimulator::particleTrace(vec2 _pos, float _timeStep)
     return _pos;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::advectVelocity(float _timeStep)
 {
     vec2 pos;
@@ -339,7 +354,7 @@ void FluidSimulator::advectVelocity(float _timeStep)
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 VectorXd FluidSimulator::negativeDivergence(float _timeStep)
 {
     size_t height = nColumns()-1;
@@ -399,7 +414,7 @@ VectorXd FluidSimulator::negativeDivergence(float _timeStep)
     return b;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 SparseMatrix<double,RowMajor> FluidSimulator::setUpMatrixA(float _timeStep)
 {
 
@@ -474,6 +489,7 @@ SparseMatrix<double,RowMajor> FluidSimulator::setUpMatrixA(float _timeStep)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::updatePressureField(VectorXd _p)
 {
     for(size_t i= 0;i<m_grid.size(); i++)
@@ -482,7 +498,7 @@ void FluidSimulator::updatePressureField(VectorXd _p)
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::pressureGradientUpdate(float _timeStep)
 {
     size_t height = nColumns()-1;
@@ -544,7 +560,7 @@ void FluidSimulator::pressureGradientUpdate(float _timeStep)
 
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 float FluidSimulator::usolid(size_t _x, size_t _y)
 {
 
@@ -560,6 +576,7 @@ float FluidSimulator::usolid(size_t _x, size_t _y)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float FluidSimulator::vsolid(size_t _x, size_t _y)
 {
 
@@ -573,7 +590,7 @@ float FluidSimulator::vsolid(size_t _x, size_t _y)
     return -m_grid.cell(_x,_y).velocityV();
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::pressureSolve(float _timeStep)
 {
     size_t dim = m_grid.size();
@@ -630,6 +647,7 @@ std::vector<FluidSimulator::vec3> FluidSimulator::velocityField(float _time)//do
     return data;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 std::vector<FluidSimulator::vec3> FluidSimulator::activeCells(float _time)
 {
     std::vector<vec3> data;
@@ -655,6 +673,7 @@ std::vector<FluidSimulator::vec3> FluidSimulator::activeCells(float _time)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 std::vector<FluidSimulator::vec3> FluidSimulator::particles()
 {
     std::vector<vec3> data;
@@ -670,6 +689,7 @@ std::vector<FluidSimulator::vec3> FluidSimulator::particles()
     return data;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void FluidSimulator::initCellCentres(){
     vec3 centre;
     centre.m_z = 0;
@@ -689,6 +709,7 @@ void FluidSimulator::initCellCentres(){
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 std::vector<FluidSimulator::vec3> FluidSimulator::boundaries()
 {
     std::vector<vec3> data;

@@ -7,6 +7,10 @@
 
 #include "view.h"
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @file View.cpp
+/// @brief implementation files for View class
+//----------------------------------------------------------------------------------------------------------------------
 View::View(QWidget *_parent, FluidSimulator *_fluidSimulator)
 {
     this->resize(_parent->size());
@@ -19,19 +23,23 @@ View::View(QWidget *_parent, FluidSimulator *_fluidSimulator)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 View::~View(){}
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::setFluidSimulator(FluidSimulator* _fluidSimulator)
 {
     this->m_fluidSimulator = _fluidSimulator;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::resizeGL(int _w , int _h)
 {
     m_win.width  = static_cast<int>( _w * devicePixelRatio() );
     m_win.height = static_cast<int>( _h * devicePixelRatio() );
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::initializeGL()
 {
     ngl::NGLInit::instance();
@@ -65,6 +73,7 @@ void View::initializeGL()
     update();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -97,8 +106,7 @@ void View::paintGL()
 }
 
 
-/******************************************************************************************************/
-//to substitute static float time with a better setup
+//----------------------------------------------------------------------------------------------------------------------
 void View::timerEvent(QTimerEvent *)
 {
     static float time;
@@ -113,6 +121,7 @@ void View::timerEvent(QTimerEvent *)
     update();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::activeCells(const std::vector<vec3>& _data)
 {
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -132,6 +141,7 @@ void View::activeCells(const std::vector<vec3>& _data)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::boundaries(const std::vector<vec3>& _data)
 {
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -151,6 +161,7 @@ void View::boundaries(const std::vector<vec3>& _data)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::particles(const std::vector<vec3>& _data)
 {
     ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
@@ -166,6 +177,7 @@ void View::particles(const std::vector<vec3>& _data)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::grid()
 {
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
@@ -178,6 +190,7 @@ void View::grid()
     prim->draw("grid");
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::initGridShape(float _w, float _h, size_t _nColumns, size_t _nRows)
 {
     m_gridColumns  = _nColumns;
@@ -195,18 +208,21 @@ void View::initGridShape(float _w, float _h, size_t _nColumns, size_t _nRows)
     prim->createLineGrid("grid",_w,_h, _nColumns);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::initCellShape()
 {
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
     prim->createTrianglePlane("cell",m_gridDeltaU,m_gridDeltaV,1,1,vec3(0.0f,0.0f,1.0f));
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::initParticleShape()
 {
     ngl::VAOPrimitives *prim = ngl::VAOPrimitives::instance();
     prim->createSphere("sphere",0.05,4);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::initVelocityField(const std::vector<vec3>& _data)
 {
     m_cellCentres = _data;
@@ -234,6 +250,7 @@ void View::initVelocityField(const std::vector<vec3>& _data)
     m_velocityFieldVao->unbind();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::velocityField(const std::vector<vec3>& _data)
 {
     resetMVP();
@@ -278,6 +295,7 @@ void View::velocityField(const std::vector<vec3>& _data)
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::updateMVP()
 {
     ngl::ShaderLib *shader=ngl::ShaderLib::instance();
@@ -291,17 +309,20 @@ void View::updateMVP()
     shader->setUniform("MVP",MVP);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::resetMVP()
 {
     m_transform.setPosition(vec3(0.0f,0.0f,0.0f));
     m_transform.setRotation(vec3(0.0f,0.0f,0.0f));
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::togglePlaySimulation()
 {
     m_playSimulation= !m_playSimulation;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void View::togglePlayNextFrame()
 {
     m_playSimulation = false;

@@ -5,6 +5,19 @@
 #include "fluidsimulator.h"
 #include "view.h"
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @class MainWindow
+/// @brief The MainWindow class is the Control component in the MVC design pattern.
+/// The class connects the GUI with the simulation model and the display(view) class.
+/// It also controls the simulation execution and the visualised data.
+///
+/// Originally based on class MainWindow from https://github.com/NCCA/QtNGL.git
+///  @author Federico Leone
+///  @version 3.0
+///  @date
+/// @todo Add more option to setup the initial state of the fluid simulation.
+//----------------------------------------------------------------------------------------------------------------------
+
 namespace Ui {
 class MainWindow;
 }

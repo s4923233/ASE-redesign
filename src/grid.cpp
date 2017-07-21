@@ -5,11 +5,16 @@
 #include <cmath>
 #include <cassert>
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @file grid.cpp
+/// @brief implementation files for Grid class
+//----------------------------------------------------------------------------------------------------------------------
 Grid::Grid()
 {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Grid::Grid(float _w,float _h,size_t _nColumns,size_t _nRows)
 {
     if(!(_w>0 && _h>0)) throw(std::range_error("Error: Null or Negative Area"));
@@ -49,6 +54,7 @@ Grid::Grid(float _w,float _h,size_t _nColumns,size_t _nRows)
     initGrids();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Grid::Grid(const Grid& _other)
 {
     this->m_nColumns = _other.m_nColumns;
@@ -83,6 +89,7 @@ Grid::Grid(const Grid& _other)
     initGrids();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Grid& Grid::operator=(const Grid& _other)
 {
     assert(this != &_other);
@@ -125,8 +132,10 @@ Grid& Grid::operator=(const Grid& _other)
     return *this;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Grid::~Grid(){}
 
+//----------------------------------------------------------------------------------------------------------------------
 void Grid::initGrids()
 {
     //resize Grids
@@ -192,11 +201,13 @@ void Grid::initGrids()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 size_t Grid::toIndex(const size_t _x,const size_t _y)
 {
     return _y*m_nColumns + _x;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Grid::vec2 Grid::toCartesian(const size_t _index)
 {
     vec2 coordinate;
@@ -207,6 +218,7 @@ Grid::vec2 Grid::toCartesian(const size_t _index)
     return coordinate;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Grid::vec2 Grid::velocity(const vec2 _point)
 {
     //Boundaries check
@@ -219,6 +231,7 @@ Grid::vec2 Grid::velocity(const vec2 _point)
     return c.velocity(_point);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 //returns the velocity measured at the centre of the cell
 Grid::vec2 Grid::velocity(const size_t _x,const size_t _y)
 {
@@ -226,6 +239,7 @@ Grid::vec2 Grid::velocity(const size_t _x,const size_t _y)
     return c.velocity(c.centre());
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Grid::vec2 Grid::deltaVelocity(const vec2 _point)
 {
     //Boundaries check
@@ -238,19 +252,21 @@ Grid::vec2 Grid::deltaVelocity(const vec2 _point)
     return c.deltaVelocity(_point);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Grid::vec2 Grid::deltaVelocity(const size_t _x,const size_t _y)
 {
     Cell c = m_gridCell[toIndex(_x,_y)];
     return c.deltaVelocity(c.centre());
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 float Grid::velocityDivergence(const size_t _x,const size_t _y)
 {
     Cell c = m_gridCell[toIndex(_x,_y)];
     return c.divergence();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Grid::maxVelocityUpdate()
 {
     std::vector<float> velocityUSquared(m_size,0.0f);
@@ -272,6 +288,7 @@ void Grid::maxVelocityUpdate()
     m_maxVelocity = std::sqrt(*max);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Grid::deltaVelocityUpdate()
 {
     m_gridDeltaVelocityU.clear();
@@ -284,29 +301,33 @@ void Grid::deltaVelocityUpdate()
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Grid::resetInitialVelocity()
 {
     std::fill(m_gridInitialVelocityU.begin(),m_gridInitialVelocityU.end(),0.0f);
     std::fill(m_gridInitialVelocityV.begin(),m_gridInitialVelocityV.end(),0.0f);
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 float Grid::density(const size_t _x,const size_t _y)
 {
     Cell c = m_gridCell[toIndex(_x,_y)];
     return c.density();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Grid::pressure(const size_t _index, const float _pressure)
 {
     m_gridCell[_index].setPressure(_pressure);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Cell& Grid::cell(const size_t _index)
 {
     return m_gridCell[_index];
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Cell& Grid::cell(const vec2 _point)
 {
     size_t x = static_cast<size_t>(_point.m_x/m_deltaU);
@@ -315,12 +336,13 @@ Cell& Grid::cell(const vec2 _point)
     return m_gridCell[toIndex(x,y)];
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Cell& Grid::cell(const size_t _x,const size_t _y)
 {
     return m_gridCell[toIndex(_x,_y)];
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 std::vector<Grid::cell_ptr> Grid::column(const size_t _index)
 {
     if(!(_index<m_nColumns))
@@ -335,6 +357,7 @@ std::vector<Grid::cell_ptr> Grid::column(const size_t _index)
     return outColumn;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 std::vector<Grid::cell_ptr> Grid::row(const size_t _index)
 {
     if(!(_index<m_nRows))

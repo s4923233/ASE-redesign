@@ -3,6 +3,10 @@
 
 #include <iostream>
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @file MainWindow.cpp
+/// @brief implementation files for MainWindow class
+//----------------------------------------------------------------------------------------------------------------------
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::MainWindow)
 {
     m_ui->setupUi(this);
@@ -24,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::Main
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 MainWindow::~MainWindow()
 {
     delete m_ui;
@@ -31,54 +36,64 @@ MainWindow::~MainWindow()
     delete m_view;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::setFluidSimulator(FluidSimulator* _fluidsimulator){
     this->m_fluidsimulator = _fluidsimulator;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::setViewer(View* _view){
     this->m_view = _view;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::toggleGrid(bool _mode)
 {
     m_view->setDisplayGrid(_mode);
     update();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::toggleVelocityField(bool _mode)
 {
     m_view->setDisplayVelocityField(_mode);
     update();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::toggleParticles(bool _mode)
 {
     m_view->setDisplayParticles(_mode);
     update();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::toggleActiveCells(bool _mode)
 {
     m_view->setDisplayActiveCells(_mode);
     update();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::toggleBoundaries(bool _mode)
 {
     m_view->setBoundaries(_mode);
     update();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::togglePressureSolver(bool _mode)
 {
     m_fluidsimulator->setPressureSolverMode(_mode);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::togglePlayStop()
 {
     m_view->togglePlaySimulation();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void MainWindow::nextFrame()
 {
     m_view->togglePlayNextFrame();

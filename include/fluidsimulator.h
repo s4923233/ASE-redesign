@@ -18,10 +18,22 @@ using Eigen::ConjugateGradient;
 using Eigen::Success;
 typedef Triplet<double> Tripletd;
 
-enum class Colour{WHITE,GRAY,BLACK};
 
 typedef void (*FrameReadyHandler)(bool _newFrame);
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @class FluidSimulator
+/// @brief FluidSimulator class implements the FLIP routine as described in (Bridson,2011).
+/// It is the Model component in the MVC design pattern.
+/// The class uses the interface provided from the Grid to implement a set of algorithms used in fluid simulation.
+/// The class also prepares the data for the visualisation by the View.
+///
+/// The simulation is assumed to be contained in a solid bounding box.
+///  @author Federico Leone
+///  @version 2.0
+///  @date
+/// @todo Include all the details needed to allow the pressure solver converge to a solution. e.g(per frame CFL coefficient)
+//----------------------------------------------------------------------------------------------------------------------
 class FluidSimulator
 {
     typedef ngl::Vec3 vec3;

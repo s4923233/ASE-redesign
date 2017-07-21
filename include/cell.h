@@ -8,8 +8,24 @@
 
 #include "particle.h"
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @enum used to describe what a cell contains
 enum class Label{ EMPTY, SOLID, FLUID };
+//----------------------------------------------------------------------------------------------------------------------
+/// @enum used to describe the status of a cell
 enum class Status{ ACTIVE, INACTIVE };
+
+//----------------------------------------------------------------------------------------------------------------------
+/// @class Cell
+/// @brief Cell class. The cell is the basic unit of a grid. The cell has the main responsibilities of setting and
+/// retreiving information from the simulation space. It implements the weighted transfer of quantities between the grid
+/// and the particles. It is used to implement a MAC-Grid, for this reason the velocities are stored at the edges and the
+/// pressure in the centre of the cell.
+///
+///  @author Federico Leone
+///  @version 2.0
+///  @date
+//----------------------------------------------------------------------------------------------------------------------
 
 class Cell
 {

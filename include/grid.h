@@ -4,6 +4,18 @@
 #include <ngl/Vec2.h>
 #include "cell.h"
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @class Grid
+/// @brief This class implemets a MAC-Grid. The grid contains the velocity, pressure and spatial information(cells) to run the simulation.
+/// It provides the methods to set and access information in the simulation space.
+/// It provides a useful interface to write algorithms that should run on specific cells as well as on the whole set of cells.
+/// The grid also implements methods to easily perform operations on the velocity components without accessing the cells.
+/// DeltaVelocityUpdate() , for example, computes the delta between the initial velocity, as retreived from the particles,
+/// and the velocity edited by the main routine, without accessing any cell.
+///  @author Federico Leone
+///  @version 2.0
+///  @date
+//----------------------------------------------------------------------------------------------------------------------
 class Grid
 {
     typedef float* magnitude_ptr;

@@ -2,6 +2,10 @@
 #include <limits.h>
 #include <cmath>
 
+//----------------------------------------------------------------------------------------------------------------------
+/// @file cell.cpp
+/// @brief implementation files for Cell class
+//----------------------------------------------------------------------------------------------------------------------
 Cell::Cell()
 {
     setLabel(Label::EMPTY);
@@ -44,7 +48,7 @@ Cell::Cell()
     m_particles.clear();
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 Cell::Cell(const size_t _index, const vec2 _minUV, const vec2 _maxUV, const std::array<magnitude_ptr,7>& _magnitude,const std::array<cell_ptr,4>& _neighbour)
 {
     setLabel(Label::EMPTY);
@@ -87,6 +91,7 @@ Cell::Cell(const size_t _index, const vec2 _minUV, const vec2 _maxUV, const std:
     m_particles.clear();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Cell::Cell(const Cell& _other)
 {
     this->m_label = _other.m_label;
@@ -121,6 +126,7 @@ Cell::Cell(const Cell& _other)
     this->m_particles = _other.m_particles;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Cell& Cell::operator=(const Cell& _other)
 {
     assert(this != &_other);
@@ -158,46 +164,53 @@ Cell& Cell::operator=(const Cell& _other)
 
     return *this;
 }
-
+//----------------------------------------------------------------------------------------------------------------------
 Cell::~Cell(){}
 
+//----------------------------------------------------------------------------------------------------------------------
 float Cell::density()
 {
     return static_cast<float>(m_particleCount)
             /static_cast<float>(m_particlePoolSize);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float Cell::velocityU()
 {
     return *m_velocityU;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float Cell::velocityV()
 {
     return *m_velocityV;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float Cell::deltaVelocityU()
 {
     return *m_deltaVelocityU;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float Cell::deltaVelocityV()
 {
     return *m_deltaVelocityV;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float Cell::initialVelocityU()
 {
     return *m_initialVelocityU;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float Cell::initialVelocityV()
 {
     return *m_initialVelocityV;
 }
 
-//to change. Use map for velocities, instead
+//----------------------------------------------------------------------------------------------------------------------
 Cell::vec2 Cell::velocity(const vec2 _point)
 {
     if ((_point.m_x<minU())||(_point.m_x>m_maxU))
@@ -213,12 +226,13 @@ Cell::vec2 Cell::velocity(const vec2 _point)
     float N_velocityV = m_neighbour['N'] == nullptr ? 0.0f: m_neighbour['N']->velocityV();
     vec2 result;
 
-    result.m_x = (1-alphaU)*velocityU() + alphaU*E_velocityU;//velocityW() + alphaU*velocityE();
-    result.m_y= (1-alphaV)*velocityV() + alphaU*N_velocityV;//velocityS() + alphaV*velocityN();
+    result.m_x = (1-alphaU)*velocityU() + alphaU*E_velocityU;
+    result.m_y= (1-alphaV)*velocityV() + alphaU*N_velocityV;
 
     return result;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Cell::vec2 Cell::deltaVelocity(const vec2 _point)
 {
     if ((_point.m_x<minU())||(_point.m_x>m_maxU))
@@ -239,6 +253,7 @@ Cell::vec2 Cell::deltaVelocity(const vec2 _point)
     return result;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float Cell::divergence()
 {
     float E_velocityU = m_neighbour['E'] == nullptr ? 0.0f: m_neighbour['E']->velocityU();
@@ -250,54 +265,59 @@ float Cell::divergence()
     return uDivergence+vDivergence;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float Cell::pressure()
 {
     return *m_pressure;
 }
 
 //set methods
+//----------------------------------------------------------------------------------------------------------------------
 void Cell::setLabel(const Label _label)
 {
     m_label = _label;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Cell::setStatus(const Status _status)
 {
     m_status = _status;
 }
 
 
-//updates velocityU as well
+//----------------------------------------------------------------------------------------------------------------------
 void Cell::setInitialVelocityU(const float _magnitude)
 {
     *m_initialVelocityU = _magnitude;
     setVelocityU(_magnitude);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Cell::setVelocityU(const float _magnitude)
 {
     *m_velocityU = _magnitude;
 }
 
-//updates velocityV as well
+//----------------------------------------------------------------------------------------------------------------------
 void Cell::setInitialVelocityV(const float _magnitude)
 {
     *m_initialVelocityV = _magnitude;
     setVelocityV(_magnitude);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Cell::setVelocityV(const float _magnitude)
 {
     *m_velocityV = _magnitude;
 }
 
-//deltavelocity must be updated from Grid
-
+//----------------------------------------------------------------------------------------------------------------------
 void Cell::setPressure(const float _magnitude)
 {
     *m_pressure = _magnitude;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Cell::initNeighbourIndexList()
 {
     m_neighbourIndexList.resize(4);
