@@ -16,3 +16,7 @@ The simulation assumes the presence of a solid bounding box, which contains the 
 
 #References:
 Bridson,R, 2011. Fluid Simulation for Computer Graphics. 2nd ed.
+
+<p align="center">
+  <img src="./VideoDemoASE.gif" width="350"/>
+</p>

@@ -20,7 +20,7 @@ FluidSimulator::FluidSimulator()
     initBoundaries();
 
     //emits at most 20 particles, randomly distributed.
-    emitParticles(20,1,0.25f);
+    emitParticles(500,1,0.25f);
 
     //uncomment to emit 5 particles per cell
     //emitParticlesPerCell(5,0,1.0f);
