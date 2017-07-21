@@ -211,6 +211,7 @@ float Cell::initialVelocityV()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//Calculate the interpolated value of the velocity at the point specified
 Cell::vec2 Cell::velocity(const vec2 _point)
 {
     if ((_point.m_x<minU())||(_point.m_x>m_maxU))
@@ -221,11 +222,12 @@ Cell::vec2 Cell::velocity(const vec2 _point)
     float alphaU = (_point.m_x-m_minU)/m_deltaU;
     float alphaV = (_point.m_y-m_minV)/m_deltaV;
 
-
+    //the cell neighbours
     float E_velocityU = m_neighbour['E'] == nullptr ? 0.0f: m_neighbour['E']->velocityU();
     float N_velocityV = m_neighbour['N'] == nullptr ? 0.0f: m_neighbour['N']->velocityV();
     vec2 result;
 
+    //calculate the interpolated value of the velocity
     result.m_x = (1-alphaU)*velocityU() + alphaU*E_velocityU;
     result.m_y= (1-alphaV)*velocityV() + alphaU*N_velocityV;
 
@@ -233,6 +235,7 @@ Cell::vec2 Cell::velocity(const vec2 _point)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//Calculate the interpolated value of delta velocity at the point specified
 Cell::vec2 Cell::deltaVelocity(const vec2 _point)
 {
     if ((_point.m_x<minU())||(_point.m_x>m_maxU))
@@ -243,10 +246,12 @@ Cell::vec2 Cell::deltaVelocity(const vec2 _point)
     float alphaU = (_point.m_x-m_minU)/m_deltaU;
     float alphaV = (_point.m_y-m_minV)/m_deltaV;
 
+    //the cell neighbours
     float E_deltaVelocityU = m_neighbour['E'] == nullptr ? 0.0f: m_neighbour['E']->deltaVelocityU();
     float N_deltaVelocityV = m_neighbour['N'] == nullptr ? 0.0f: m_neighbour['N']->deltaVelocityV();
     vec2 result;
 
+    //calculate the interpolated value of the velocity
     result.m_x = (1-alphaU)*deltaVelocityU() + alphaU*E_deltaVelocityU;
     result.m_y= (1-alphaV)*deltaVelocityV() + alphaU*N_deltaVelocityV;
 
@@ -254,6 +259,7 @@ Cell::vec2 Cell::deltaVelocity(const vec2 _point)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//calculate the velocity divergence at this cell
 float Cell::divergence()
 {
     float E_velocityU = m_neighbour['E'] == nullptr ? 0.0f: m_neighbour['E']->velocityU();

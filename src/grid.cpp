@@ -136,6 +136,7 @@ Grid& Grid::operator=(const Grid& _other)
 Grid::~Grid(){}
 
 //----------------------------------------------------------------------------------------------------------------------
+//initialises the data structures used by the grid
 void Grid::initGrids()
 {
     //resize Grids
@@ -188,6 +189,9 @@ void Grid::initGrids()
             neighbours.at(3) =
                     (x >= 2) ? &(m_gridCell.at(toIndex(x-2,y-1))) : nullptr;//W
 
+            //the cell is initialised with the prepared data.
+            //The newly created cell will point to the appropriate velocity locations
+            //it also know its neighbours
             m_gridCell.at(cell_index) = Cell(cell_index,minUV,maxUV,magnitude,neighbours);
         }
     }
@@ -202,12 +206,14 @@ void Grid::initGrids()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//converts cartesian coordinates to an index
 size_t Grid::toIndex(const size_t _x,const size_t _y)
 {
     return _y*m_nColumns + _x;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//convert an index to cartesian coordinates
 Grid::vec2 Grid::toCartesian(const size_t _index)
 {
     vec2 coordinate;
@@ -219,6 +225,7 @@ Grid::vec2 Grid::toCartesian(const size_t _index)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//returns the velocity at the specified spatial location
 Grid::vec2 Grid::velocity(const vec2 _point)
 {
     //Boundaries check
@@ -240,6 +247,7 @@ Grid::vec2 Grid::velocity(const size_t _x,const size_t _y)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//returns the delta velocity at the specified spatial location
 Grid::vec2 Grid::deltaVelocity(const vec2 _point)
 {
     //Boundaries check
@@ -253,6 +261,7 @@ Grid::vec2 Grid::deltaVelocity(const vec2 _point)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//returns the delta velocity at the specified cell
 Grid::vec2 Grid::deltaVelocity(const size_t _x,const size_t _y)
 {
     Cell c = m_gridCell[toIndex(_x,_y)];
@@ -260,6 +269,7 @@ Grid::vec2 Grid::deltaVelocity(const size_t _x,const size_t _y)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//returns the velocity divergence at the specified cell
 float Grid::velocityDivergence(const size_t _x,const size_t _y)
 {
     Cell c = m_gridCell[toIndex(_x,_y)];
@@ -267,6 +277,7 @@ float Grid::velocityDivergence(const size_t _x,const size_t _y)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//calculates the max velocity in the system
 void Grid::maxVelocityUpdate()
 {
     std::vector<float> velocityUSquared(m_size,0.0f);
@@ -289,6 +300,8 @@ void Grid::maxVelocityUpdate()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//calculates the delta velocity for all the cells.
+//deltaVelocity = InitialVelocity-UpdatedVelocity
 void Grid::deltaVelocityUpdate()
 {
     m_gridDeltaVelocityU.clear();
@@ -302,6 +315,7 @@ void Grid::deltaVelocityUpdate()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//set the initial velocity to zero
 void Grid::resetInitialVelocity()
 {
     std::fill(m_gridInitialVelocityU.begin(),m_gridInitialVelocityU.end(),0.0f);
@@ -343,6 +357,7 @@ Cell& Grid::cell(const size_t _x,const size_t _y)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//returns the i-th column of cells
 std::vector<Grid::cell_ptr> Grid::column(const size_t _index)
 {
     if(!(_index<m_nColumns))
@@ -358,6 +373,7 @@ std::vector<Grid::cell_ptr> Grid::column(const size_t _index)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+//returns the i-th row of cells
 std::vector<Grid::cell_ptr> Grid::row(const size_t _index)
 {
     if(!(_index<m_nRows))
