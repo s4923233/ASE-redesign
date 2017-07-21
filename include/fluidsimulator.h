@@ -2,8 +2,23 @@
 #define FLUIDSIMULATOR_H
 #include <ngl/Vec3.h>
 #include <vector>
+#include <queue>
 
 #include "grid.h"
+
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Sparse>
+#include <eigen3/Eigen/IterativeLinearSolvers>
+using Eigen::VectorXd;
+using Eigen::VectorXi;
+using Eigen::SparseMatrix;
+using Eigen::Triplet;
+using Eigen::RowMajor;
+using Eigen::ConjugateGradient;
+using Eigen::Success;
+typedef Triplet<double> Tripletd;
+
+enum class Colour{WHITE,GRAY,BLACK};
 
 typedef void (*FrameReadyHandler)(bool _newFrame);
 
@@ -25,9 +40,13 @@ public:
     size_t simulationSize() const                    {return m_simulationSize;}
     std::vector<vec3> cellCentres()const             {return m_cellCentres;}
 
+    void setPressureSolverMode(bool _mode)           {m_pressureSolverMode = _mode;}
+
     std::vector<vec3> velocityField(float _time);
     std::vector<vec3> activeCells(float _time);
-    std::vector<FluidSimulator::vec3> boundaries();
+    std::vector<vec3> boundaries();
+
+    void boundaryCollide(particle_ptr _p);
 
     std::vector<vec3> particles();
 
@@ -38,11 +57,16 @@ public:
     void markCells();
     vec2 particleTrace(vec2 _pos, float _timeStep);
     void advectVelocity(float _timeStep);
+    VectorXd negativeDivergence(float _timeStep);
+    SparseMatrix<double,RowMajor> setUpMatrixA(float _timeStep);
+    void updatePressureField(VectorXd _p);
+    void pressureGradientUpdate(float _timeStep);
+    void pressureSolve(float _timeStep);
 
 
 protected:
     void setFrameReady(const bool _frameReady);
-    void registerFrameReadyHandler(FrameReadyHandler _handler);
+//    void registerFrameReadyHandler(FrameReadyHandler _handler);
 
     void initCellCentres();
     void initBoundaries();
@@ -51,17 +75,21 @@ protected:
 
     float kernel(vec2 _xp);
     float h(float _r);
+
+    float usolid(size_t _x, size_t _y);
+    float vsolid(size_t _x, size_t _y);
+
 private:
 
     bool m_frameReady = false;
+    bool m_pressureSolverMode = false;
     float m_cfl = 2.0;
-    FrameReadyHandler m_event = nullptr;
+
 
     Grid m_grid;
     std::vector<vec3> m_cellCentres;
     std::vector<Particle> m_particlePool;
     size_t m_simulationSize;
-    //std::vector<vec3> m_particlePool;//to substitute vec3 with Particle
 };
 
 #endif // FLUIDSIMULATOR_H

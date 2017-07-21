@@ -33,6 +33,9 @@ public:
     void setDisplayActiveCells(bool _mode)              {m_displayActiveCells=_mode;}
     void setBoundaries(bool _mode)                      {m_displayBoundaries=_mode;}
 
+    void togglePlaySimulation();
+    void togglePlayNextFrame();
+
 protected:
     void resizeGL(int _w, int _h);
     void initializeGL();
@@ -65,13 +68,15 @@ private:
 
     std::vector<vec3> m_cellCentres;
 
-    //display-hide param
+    //display-hide params
     bool m_displayGrid;
     bool m_displayVelocityField;
     bool m_displayParticles;
     bool m_displayActiveCells;
     bool m_displayBoundaries;
 
+    bool m_playSimulation;
+    bool m_playNextFrame;
 
     float m_time;
 };

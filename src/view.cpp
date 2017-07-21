@@ -105,7 +105,11 @@ void View::timerEvent(QTimerEvent *)
     time+=0.1f;
     m_time = time;
 
-    m_fluidSimulator->advanceFrame();
+    if(m_playSimulation||m_playNextFrame)
+    {
+        m_fluidSimulator->advanceFrame();
+        m_playNextFrame = false;
+    }
     update();
 }
 
@@ -291,4 +295,15 @@ void View::resetMVP()
 {
     m_transform.setPosition(vec3(0.0f,0.0f,0.0f));
     m_transform.setRotation(vec3(0.0f,0.0f,0.0f));
+}
+
+void View::togglePlaySimulation()
+{
+    m_playSimulation= !m_playSimulation;
+}
+
+void View::togglePlayNextFrame()
+{
+    m_playSimulation = false;
+    m_playNextFrame = true;
 }

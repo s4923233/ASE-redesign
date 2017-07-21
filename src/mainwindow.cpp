@@ -17,6 +17,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::Main
     connect(m_ui->m_displayParticles_CkBox,SIGNAL(toggled(bool)),this,SLOT(toggleParticles(bool)));
     connect(m_ui->m_displayActiveCells_CkBox,SIGNAL(toggled(bool)),this,SLOT(toggleActiveCells(bool)));
     connect(m_ui->m_displayBoundaries_CkBox,SIGNAL(toggled(bool)),this,SLOT(toggleBoundaries(bool)));
+
+    connect(m_ui->m_playStop_Btn,SIGNAL(clicked()),this,SLOT(togglePlayStop()));
+    connect(m_ui->m_nextFrame_Btn,SIGNAL(clicked()),this,SLOT(nextFrame()));
+
+
 }
 
 MainWindow::~MainWindow()
@@ -62,4 +67,19 @@ void MainWindow::toggleBoundaries(bool _mode)
 {
     m_view->setBoundaries(_mode);
     update();
+}
+
+void MainWindow::togglePressureSolver(bool _mode)
+{
+    m_fluidsimulator->setPressureSolverMode(_mode);
+}
+
+void MainWindow::togglePlayStop()
+{
+    m_view->togglePlaySimulation();
+}
+
+void MainWindow::nextFrame()
+{
+    m_view->togglePlayNextFrame();
 }

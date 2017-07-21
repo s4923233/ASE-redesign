@@ -11,7 +11,7 @@
 enum class Label{ EMPTY, SOLID, FLUID };
 enum class Status{ ACTIVE, INACTIVE };
 
-class Cell: public Observer
+class Cell
 {
     typedef float* magnitude_ptr;
     typedef Cell* cell_ptr;
@@ -43,6 +43,7 @@ public:
     vec2 halfEdge(char _key)    {return m_halfEdge[_key];}
 
     size_t particleCount() const {return m_particleCount;}
+    std::vector<int> neighbours() {return m_neighbourIndexList;}
 
     float density();
 
@@ -60,6 +61,7 @@ public:
 
     float pressure();
 
+
     //set methods
     void setLabel(const Label _label);
     void setStatus(const Status _status);
@@ -72,10 +74,12 @@ public:
     void setPressure(const float _magnitude);
 
     void resetParticleCount() {m_particleCount = 0;}
-    void incrementParticleCount() {m_particleCount++;}
-private:
-    void onNotify(const particle_ptr _entity, Event _event);
+    void incrementParticleCount() {++m_particleCount;}
+    void setParticlePoolSize(size_t _size) {m_particlePoolSize = _size;}
 
+    void initNeighbourIndexList();
+
+private:
     Label m_label;
     Status m_status;
     size_t m_index;
@@ -92,7 +96,7 @@ private:
 
     std::map<char,vec2> m_halfEdge;
 
-    size_t m_particlePoolSize; //<- ????
+    size_t m_particlePoolSize; //used in density
     size_t m_particleCount;
 
     magnitude_ptr m_initialVelocityU;
@@ -106,6 +110,7 @@ private:
     magnitude_ptr m_pressure;
 
     std::map<char,cell_ptr> m_neighbour;
+    std::vector<int> m_neighbourIndexList;
     std::vector<particle_ptr> m_particles;
 };
 

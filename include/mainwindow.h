@@ -18,6 +18,9 @@ public slots:
     void toggleParticles(bool _mode);
     void toggleActiveCells(bool _mode);
     void toggleBoundaries(bool _mode);
+    void togglePressureSolver(bool _mode);
+    void togglePlayStop();
+    void nextFrame();
 
 public:
     explicit MainWindow(QWidget *parent = 0);

@@ -26,8 +26,7 @@ SOURCES+=$$PWD/src/main.cpp\
          $$PWD/src/view.cpp \
          $$PWD/src/grid.cpp \
          $$PWD/src/cell.cpp \
-         $$PWD/src/particle.cpp \
-         $$PWD/src/observer.cpp
+         $$PWD/src/particle.cpp
 
 HEADERS+=$$PWD/include/mainwindow.h \
          $$PWD/include/fluidsimulator.h \
@@ -35,8 +34,7 @@ HEADERS+=$$PWD/include/mainwindow.h \
          $$PWD/include/windowparams.h \
          $$PWD/include/grid.h \
          $$PWD/include/cell.h \
-         $$PWD/include/particle.h \
-         $$PWD/include/observer.h
+         $$PWD/include/particle.h
 
 INCLUDEPATH+=./include
 
@@ -51,5 +49,3 @@ else{
         message("Using custom NGL location")
         include($(NGLDIR)/UseNGL.pri)
 }
-
-#DEFINES+=NDEBUG

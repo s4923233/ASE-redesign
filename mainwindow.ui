@@ -29,51 +29,23 @@
       </item>
       <item row="2" column="0">
        <layout class="QGridLayout" name="m_menuTop_grd">
-        <item row="4" column="0">
-         <widget class="QComboBox" name="m_pressureSelect_CMBox">
-          <item>
-           <property name="text">
-            <string>Default</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Alpha</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="11" column="0">
-         <widget class="QDoubleSpinBox" name="m_frameRate_DBox">
-          <property name="value">
-           <double>30.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="0">
-         <widget class="QCheckBox" name="m_displayGrid_CkBox">
+        <item row="8" column="0">
+         <widget class="QCheckBox" name="m_displayParticles_CkBox">
           <property name="text">
-           <string> Show Grid</string>
+           <string>Show Particles</string>
           </property>
           <property name="checked">
            <bool>true</bool>
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="m_CFLCoeff_lbl">
+        <item row="7" column="0">
+         <widget class="QCheckBox" name="m_displayGrid_CkBox">
           <property name="text">
-           <string>CFL Coefficient</string>
-          </property>
-         </widget>
-        </item>
-        <item row="17" column="0">
-         <widget class="QCheckBox" name="m_displayActiveCells_CkBox">
-          <property name="text">
-           <string>Show Active Cells</string>
+           <string> Show Grid</string>
           </property>
           <property name="checked">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -84,14 +56,24 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="0">
-         <widget class="QDoubleSpinBox" name="m_CFLCoeff_DBox">
-          <property name="value">
-           <double>2.000000000000000</double>
+        <item row="11" column="0">
+         <widget class="QCheckBox" name="m_displayActiveCells_CkBox">
+          <property name="text">
+           <string>Show Active Cells</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
-        <item row="15" column="0">
+        <item row="12" column="0">
+         <widget class="QCheckBox" name="m_displayBoundaries_CkBox">
+          <property name="text">
+           <string>Show Boundaries</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
          <widget class="QCheckBox" name="m_displayVelocityField_CkBox">
           <property name="enabled">
            <bool>true</bool>
@@ -104,30 +86,13 @@
           </property>
          </widget>
         </item>
-        <item row="9" column="0">
-         <widget class="QLabel" name="m_frameRate_lbl">
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="m_activateSolver_CkBox">
           <property name="text">
-           <string>FrameRate</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="0">
-         <widget class="QCheckBox" name="m_displayParticles_CkBox">
-          <property name="text">
-           <string>Show Particles</string>
+           <string>Active</string>
           </property>
           <property name="checked">
            <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="18" column="0">
-         <widget class="QCheckBox" name="m_displayBoundaries_CkBox">
-          <property name="text">
-           <string>Show Boundaries</string>
           </property>
          </widget>
         </item>

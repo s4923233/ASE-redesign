@@ -48,7 +48,7 @@ public:
     float density(const size_t _x,const size_t _y);
 
     float pressure(const vec2 _point);
-    float pressure(const size_t _x,const size_t _y);
+    void pressure(const size_t _x,const float _pressure);
 
     Cell& cell(const size_t _index);
     Cell& cell(const vec2 _point);
@@ -73,8 +73,6 @@ public:
 
     //reset
     void resetInitialVelocity();
-
-    void updateObserverList();
 
     void maxVelocityUpdate();
     void deltaVelocityUpdate();
